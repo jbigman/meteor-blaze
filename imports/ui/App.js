@@ -1,14 +1,18 @@
 import { Template } from 'meteor/templating';
 import { TasksCollection } from "../api/TasksCollection";
-import './App.html';
-import './Task.js';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import './App.html';
+import './Task';
+import "./Login";
 
 const HIDE_COMPLETED_STRING = "hideCompleted"
 
 Template.mainContainer.onCreated(function mainContainerOnCreated() {
   this.state = new ReactiveDict();
 });
+
+const getUser = () => Meteor.user();
+const isUserLogged = () => !!getUser();
 
 Template.mainContainer.helpers({
   tasks() {
@@ -28,6 +32,12 @@ Template.mainContainer.helpers({
     const incompleteTasksCount = TasksCollection.find({ isChecked: { $ne: true } }).count();
     return incompleteTasksCount ? `(${incompleteTasksCount})` : '';
   },
+  isUserLogged() {
+    return isUserLogged();
+  },
+  getUser() {
+    return getUser();
+  }
 });
 
 Template.mainContainer.events({
@@ -35,6 +45,9 @@ Template.mainContainer.events({
     const currentHideCompleted = instance.state.get(HIDE_COMPLETED_STRING);
     instance.state.set(HIDE_COMPLETED_STRING, !currentHideCompleted);
     console.log("Hide completed tasks:", currentHideCompleted);
+  },
+  'click .user'() {
+    Meteor.logout();
   }
 });
 

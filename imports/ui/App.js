@@ -6,9 +6,15 @@ import './Task';
 import "./Login";
 
 const HIDE_COMPLETED_STRING = "hideCompleted"
+const IS_LOADING_STRING = "isLoading";
 
 Template.mainContainer.onCreated(function mainContainerOnCreated() {
   this.state = new ReactiveDict();
+  const handler = Meteor.subscribe('tasks');
+  Tracker.autorun(() => {
+    this.state.set(IS_LOADING_STRING, !handler.ready());
+  });
+
 });
 
 const getUser = () => Meteor.user();
@@ -37,6 +43,10 @@ Template.mainContainer.helpers({
   },
   getUser() {
     return getUser();
+  },
+  isLoading() {
+    const instance = Template.instance();
+    return instance.state.get(IS_LOADING_STRING);
   }
 });
 
